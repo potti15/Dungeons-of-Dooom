@@ -1,3 +1,7 @@
+/**Class to read and store a map from a "map.txt" file
+ * If the file is not found, an error is printed to standard out
+ */
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
