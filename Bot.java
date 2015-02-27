@@ -1,7 +1,13 @@
-
+/**
+ * Class which contains a simple bot class to play in place
+ * of a human player.
+ * The bot will move towards gold that it is adjacent to, and will not
+ * attempt to move into walls, but otherwise moves randomly.
+ */
 public class Bot {
 
 	private static GameLogic gameLogic;
+	private static char[][] fieldOfView;
 
 	public static void main(String[] args) {
 
@@ -13,34 +19,50 @@ public class Bot {
 
 			makeMove();
 
+			//This try catch is to pause the bot after every move to make it easier to view its moves
+			try {
+
+				Thread.sleep(100);
+
+			} catch(InterruptedException ex) {
+
+					Thread.currentThread().interrupt();
+
+			}
+
 		}
 
 		System.out.println("Finished.");
 
 	}
 
+	//Method called to make the bot take a move
 	private static void makeMove() {
 
+		//The bot attempts to pick up gold at every move for simplicitiy
 		gameLogic.pickUp();
-		char[][] fieldOfView = gameLogic.look();
+		fieldOfView = gameLogic.look();
 		char nextDirection;
-		nextDirection = checkForGold(fieldOfView);
+		//Checks for gold adjacent to itself
+		nextDirection = checkForGold();
 
+		//If not gold is found adjacent to the bot, it moves randomly
 		if (nextDirection == ' ') {
 
 			nextDirection = randomDirection();
 
 		}
 
-		gameLogic.printMap();
 		gameLogic.move(String.valueOf(nextDirection));
 
 	}
 
-	private static char checkForImmediateGold(char[][] fieldOfView) {
+	//Method for checking the surrounding tiles for gold
+	private static char checkForGold() {
 
 		char immediateDirection = ' ';
 
+		//If statements based on the fact that the player is always in fieldOfView[2][2]
 		if (fieldOfView[2][1] == 'G') {
 
 			immediateDirection = 'W';
@@ -55,80 +77,83 @@ public class Bot {
 
 		} else if (fieldOfView[3][2] == 'G') {
 
-			immediateDirection = 'S;'
+			immediateDirection = 'S';
 
 		}
 
+		return immediateDirection;
+
 	}
 
-	private static char checkForGold(char[][] fieldOfView) {
+	//Method for moving the bot randomly, whilst preventing it from walking into wallks
+	private static char randomDirection() {
 
-		char directionOfGold = ' ';
+		char direction = ' ';
+		boolean validMove = false;
 
-		for (int i = 0; i < 5; i++) {
+		//Loops until a valid move is found (i.e. not in the direction of a wall)
+		while(!validMove) {
 
-			for (int j = 0; j < 5; j++) {
+			int directionInt = (int) Math.floor(Math.random() * 4);
 
-				if (fieldOfView[i][j] == 'G') {
+			switch (directionInt) {
 
-					directionOfGold = findRelativeDirection(i, j, 2, 2);
-					break;
+				case 0: if (!checkForWall(1, 2)) {
 
-				}
+									direction = 'N';
+									validMove = true;
+
+								}
+
+								break;
+
+				case 1: if (!checkForWall(3, 2)) {
+
+									direction = 'S';
+									validMove = true;
+
+								}
+
+								break;
+
+				case 2: if (!checkForWall(2, 3)) {
+
+									direction = 'E';
+									validMove = true;
+
+								}
+
+								break;
+
+				case 3: if (!checkForWall(2, 1)) {
+
+									direction = 'W';
+									validMove = true;
+
+								}
+
+								break;
 
 			}
 
 		}
 
-		return directionOfGold;
-
-	}
-
-	private static char findRelativeDirection(int yObject, int xObject, int xSubject, int ySubject) {
-
-		char direction = ' ';
-
-		if ((xObject == xSubject) && (yObject < ySubject)) {
-
-			direction = 'N';
-
-		} else if ((xObject == xSubject) && (yObject > ySubject)) {
-
-			direction = 'S';
-
-		} else if (xObject < xSubject) {
-
-			direction = 'W';
-
-		} else if (xObject > xSubject) {
-
-			direction = 'E';
-
-		}
-
 		return direction;
 
 	}
 
-	private static char randomDirection() {
+	//Method for checking whether a tile contains a wall
+	private static boolean checkForWall(int row, int column) {
 
-		char direction = ' ';
-		int directionInt = (int) Math.floor(Math.random() * 4);
+		if (fieldOfView[row][column] == '#') {
 
-		switch (directionInt) {
+			return true;
 
-			case 0: direction = 'N';
-					break;
-			case 1: direction = 'E';
-					break;
-			case 2: direction = 'S';
-					break;
-			case 3: direction = 'W';
-					break;
+		} else {
+
+			return false;
 
 		}
-
-		return direction;
 
 	}
 

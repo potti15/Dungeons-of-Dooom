@@ -1,4 +1,5 @@
-/**Class to read and store a map from a "map.txt" file
+/**
+ * Class to read and store a map from a "map.txt" file
  * If the file is not found, an error is printed to standard out
  */
 
@@ -43,6 +44,7 @@ public class Map {
 
 		while (mapSizeScanner.hasNextLine()) {
 
+			//The third line (height counts from 0) is where the actual map proper starts
 			if (height == 2) {
 
 				String firstMapLine = mapSizeScanner.nextLine();
@@ -59,6 +61,7 @@ public class Map {
 		}
 
 		mapSizeScanner.close();
+		//2 is subtracted as the first 2 lines of the map are name and win condition
 		height -= 2;
 
 		map = new char[height][width];
@@ -81,6 +84,7 @@ public class Map {
 
 			}
 
+			//The first 2 lines of the map are dealt with, leaving just the map
 			name = mapScanner.nextLine();
 			winCondition = mapScanner.nextLine();
 
@@ -120,6 +124,7 @@ public class Map {
 	//Accessor to return the amount of gold required to win
 	public int getWinCondition() {
 
+		//The first 4 characters of the line are 'win ' so the fifth is the number required
 		winCondition = winCondition.substring(4);
 		int winConditionInt = Integer.valueOf(winCondition);
 		return winConditionInt;
